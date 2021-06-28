@@ -6,7 +6,7 @@ import Assertions._
 class TryFunctions {
   @Test
   def testFunctions() {
-    val f: Functions = FunctionsImpl
+    val f: Functions = FunctionsImpl2
     assertEquals(60.1, f.sum(List(10.0, 20.0, 30.1)), 0.001) // 60.1
     println(0.0, f.sum(List())) // 0.0
     println("abc", f.concat(Seq("a", "b", "c")))
