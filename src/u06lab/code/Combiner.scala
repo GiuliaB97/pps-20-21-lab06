@@ -12,12 +12,9 @@ trait Functions {
 }
 
 object FunctionsImpl extends Functions {
-
-  override def sum(a: List[Double]): Double = ???
-
-  override def concat(a: Seq[String]): String = ???
-
-  override def max(a: List[Int]): Int = ???
+  override def sum(a: List[Double]): Double = a.foldRight(0.0)(_+_)
+  override def concat(a: Seq[String]): String = a.foldRight("")(_+_)
+  override def max(a: List[Int]): Int = a.foldRight(0)((value, acc)=> if(acc>value) acc else value)
 }
 
 
