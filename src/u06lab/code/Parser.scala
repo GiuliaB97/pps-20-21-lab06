@@ -1,5 +1,7 @@
 package u06lab.code
 
+import u06lab.code.Conversions.ParsableString
+
 /** Consider the Parser example shown in previous lesson.
   * Analogously to NonEmpty, create a mixin NotTwoConsecutive,
   * which adds the idea that one cannot parse two consecutive
@@ -9,15 +11,16 @@ package u06lab.code
   * Note we also test that the two mixins can work together!!
   */
 
+object Conversions {
+  implicit class ParsableString(s: String) {
+    def charParser: Parser[Char] = new BasicParser(s.toSet)
+  }
+}
+
 abstract class Parser[T] {
   def parse(t: T): Boolean  // is the token accepted?
   def end(): Boolean        // is it ok to end here
-  def parseAll(seq: Seq[T]): Boolean = (seq forall {parse(_)}) & end() // note &, not &&
-}
-
-class BasicParser(chars: Set[Char]) extends Parser[Char] {
-  override def parse(t: Char): Boolean = chars.contains(t)
-  override def end(): Boolean = true
+  def parseAll(seq: Seq[T]): Boolean = (seq forall parse) & end() // note &, not &&
 }
 
 trait NonEmpty[T] extends Parser[T]{
@@ -26,15 +29,19 @@ trait NonEmpty[T] extends Parser[T]{
   abstract override def end() = !empty && {empty = true; super.end()}
 }
 
-class NonEmptyParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char]
-
 trait NotTwoConsecutive[T] extends Parser[T]{
   private[this] var last:T = _
   abstract override def parse(t: T): Boolean =  if (t==last) false else { last= t; super.parse(t);}
+  abstract override def end(): Boolean = super.end()
 }
 
+class BasicParser(chars: Set[Char]) extends Parser[Char] {
+  override def parse(t: Char): Boolean = chars.contains(t)
+  override def end(): Boolean = true
+}
+class NonEmptyParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char]
 class NotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) with NotTwoConsecutive[Char] //Class that extends multiple traits: the last one is the one just implemented
-
+class NotEmptyNotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char] with NotTwoConsecutive[Char]
 
 object TryParsers extends App {
   def parser = new BasicParser(Set('a','b','c'))
@@ -60,7 +67,7 @@ object TryParsers extends App {
   println(parserNTCNE.parseAll("XYYZ".toList)) // false
   println(parserNTCNE.parseAll("".toList)) // false
 
-  def sparser : Parser[Char] = ??? // "abc".charParser()
+  def sparser : Parser[Char] = "abc".charParser
   println(sparser.parseAll("aabc".toList)) // true
   println(sparser.parseAll("aabcdc".toList)) // false
   println(sparser.parseAll("".toList)) // true
