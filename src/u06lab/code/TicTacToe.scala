@@ -16,7 +16,6 @@ object TicTacToe extends App{
   // Exercise 1
   def find(board: Board, x: Int, y: Int): Option[Player] = board.find(m=> m.x==x && m.y==y).map(_.player)
 
-
   // Exercise 2
   def placeAnyMark(board: Board, player: Player): Seq[Board] = {
     for {
@@ -33,7 +32,13 @@ object TicTacToe extends App{
    */
 
   //Exercise 3
-  def computeAnyGame(player: Player, moves: Int): Stream[Game] = ???
+  def computeAnyGame(player: Player, moves: Int): Stream[Game] = moves match{
+    case 0 => Stream(List(Nil))
+    case _ => for {
+      game <- computeAnyGame(player.other,  moves- 1)   // it collects the games created in the previous moves
+      nextMark <- placeAnyMark(game.head, player)       // for each of the game collected at the previous step it adds a new mark
+    } yield if (!nextMark.isEmpty)  nextMark :: game else game
+  }
 
   def printBoards(game: Seq[Board]): Unit =
     for (y <- 0 to 2; board <- game.reverse; x <- 0 to 2) {
