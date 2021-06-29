@@ -29,10 +29,11 @@ trait NonEmpty[T] extends Parser[T]{
 class NonEmptyParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char]
 
 trait NotTwoConsecutive[T] extends Parser[T]{
-  // ???
+  private[this] var last:T = _
+  abstract override def parse(t: T): Boolean =  if (t==last) false else { last= t; super.parse(t);}
 }
 
-class NotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) // ??? with ...
+class NotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) with NotTwoConsecutive[Char] //Class that extends multiple traits: the last one is the one just implemented
 
 
 object TryParsers extends App {
