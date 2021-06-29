@@ -1,6 +1,6 @@
 package u06lab.code
 
-import u06lab.code.Conversions.ParsableString
+import u06lab.code.ImplicitConversions.StringParser
 
 /** Consider the Parser example shown in previous lesson.
   * Analogously to NonEmpty, create a mixin NotTwoConsecutive,
@@ -10,12 +10,6 @@ import u06lab.code.Conversions.ParsableString
   * used in the testing code at the end.
   * Note we also test that the two mixins can work together!!
   */
-
-object Conversions {
-  implicit class ParsableString(s: String) {
-    def charParser: Parser[Char] = new BasicParser(s.toSet)
-  }
-}
 
 abstract class Parser[T] {
   def parse(t: T): Boolean  // is the token accepted?
@@ -42,6 +36,12 @@ class BasicParser(chars: Set[Char]) extends Parser[Char] {
 class NonEmptyParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char]
 class NotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) with NotTwoConsecutive[Char] //Class that extends multiple traits: the last one is the one just implemented
 class NotEmptyNotTwoConsecutiveParser(chars: Set[Char]) extends BasicParser(chars) with NonEmpty[Char] with NotTwoConsecutive[Char]
+
+object ImplicitConversions {
+  implicit class StringParser(s: String) {
+    def charParser: Parser[Char] = new BasicParser(s.toSet)
+  }
+}
 
 object TryParsers extends App {
   def parser = new BasicParser(Set('a','b','c'))

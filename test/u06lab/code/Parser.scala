@@ -2,7 +2,7 @@ package u06lab.code
 
 import org.junit.jupiter.api.{Assertions, Test}
 import Assertions._
-import u06lab.code.Conversions.ParsableString
+import u06lab.code.ImplicitConversions.StringParser
 
 class TryParsers {
   def parser = new BasicParser(Set('a', 'b', 'c'))
